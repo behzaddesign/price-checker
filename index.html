@@ -1,37 +1,29 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-  <meta charset="UTF-8">
-  <title>جستجوی قیمت محصول</title>
-  <style>
-    body { font-family: sans-serif; direction: rtl; text-align: center; margin-top: 100px; }
-    input, button { padding: 10px; font-size: 18px; margin: 10px; }
-    #result { margin-top: 20px; font-size: 20px; color: green; }
-  </style>
-</head>
-<body>
-  <h2>جستجوی قیمت محصول</h2>
-  <input type="text" id="searchInput" placeholder="کد محصول را وارد کنید" />
-  <button onclick="search()">جستجو</button>
-  <div id="result"></div>
+<script>
+  let data = [];
 
-  <script>
-    let data = [];
+  fetch('data.json')
+    .then(res => res.json())
+    .then(json => data = json);
 
-    fetch('data.json')
-      .then(res => res.json())
-      .then(json => data = json);
+  function search() {
+    const query = document.getElementById('searchInput').value.trim();
+    const resultDiv = document.getElementById('result');
 
-    function search() {
-      const code = document.getElementById('searchInput').value;
-      const item = data.find(i => i.code === code);
-      const result = document.getElementById('result');
-      if (item) {
-        result.innerHTML = `نام کالا: ${item.name}<br>قیمت: ${item.price}`;
-      } else {
-        result.innerHTML = 'محصولی با این کد یافت نشد.';
-      }
+    // فقط جستجو در کد محصول
+    const results = data.filter(item =>
+      item.code.includes(query)
+    );
+
+    if (results.length > 0) {
+      resultDiv.innerHTML = results.map(item =>
+        `<div style="margin-bottom:15px;">
+           <strong>کد:</strong> ${item.code}<br>
+           <strong>نام:</strong> ${item.name}<br>
+           <strong>قیمت:</strong> ${item.price}
+         </div>`
+      ).join('');
+    } else {
+      resultDiv.innerHTML = 'محصولی با این کد یافت نشد.';
     }
-  </script>
-</body>
-</html>
+  }
+</script>
